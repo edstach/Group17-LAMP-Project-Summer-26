@@ -5,7 +5,7 @@
     $searchResults = array();
     $searchCount = 0;
     
-    $conn = new mysqli("localhost", username, password, database); 
+    $conn = new mysqli("localhost", "SlimeGuy" , "WeLoveSlime", "SlimeManager"); 
     if ($conn->conn_error)
     {
         returnError( $conn->conn_error );
