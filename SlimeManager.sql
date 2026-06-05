@@ -1,0 +1,37 @@
+CREATE DATABASE SlimeManager;
+USE SlimeManager;
+
+
+CREATE TABLE SlimeManager.Users
+(
+    ID INT NOT NULL AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Login VARCHAR(50) NOT NULL,
+    Password VARCHAR(275) NOT NULL,
+    PRIMARY KEY (ID)
+) ENGINE = InnoDB;
+
+
+CREATE TABLE SlimeManager.Contacts
+(
+    ID INT NOT NULL AUTO_INCREMENT,
+    UserID INT NOT NULL DEFAULT '0',
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Phone VARCHAR(25) NOT NULL,
+    Email VARCHAR(125) NOT NULL,
+    MediaApp VARCHAR(50) DEFAULT '',
+    MediaUsername VARCHAR(50) DEFAULT '',
+    MediaIsLink BOOLEAN DEFAULT FALSE,
+    MediaLink VARCHAR(255) DEFAULT '',
+    PRIMARY KEY (ID),
+    FOREIGN KEY (UserID) 
+    REFERENCES Users(ID) 
+    ON DELETE CASCADE
+) ENGINE = InnoDB;
+
+
+CREATE USER 'SlimeGuy' IDENTIFIED BY 'WeLoveSlime';
+GRANT ALL PRIVILEGES ON SlimeManager.* TO 'SlimeGuy'@'%';
+
