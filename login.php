@@ -6,7 +6,7 @@
     $firstName = " ";
     $lastName = " ";
 
-    $conn = new mysqli("localhost", "username", "password", "database");
+    $conn = new mysqli("localhost", "SlimeGuy" , "WeLoveSlime", "SlimeManager");
     if( $conn->connect_error)
         {
             returnWithError( $conn->connect_error );
