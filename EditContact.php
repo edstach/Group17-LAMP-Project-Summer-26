@@ -9,7 +9,7 @@
 	$phone = $inData["phone"];
 	$email = $inData["email"];
 
-	$conn = new mysqli("localhost", "username", "password", "database");
+	$conn = new mysqli("localhost", "SlimeGuy" , "WeLoveSlime", "SlimeManager");
 
 	if($conn->connect_error)
 	{
