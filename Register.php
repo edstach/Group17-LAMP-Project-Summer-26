@@ -6,7 +6,7 @@
 	$login = $inData["login"];
 	$password = $inData["password"];
 
-	$conn = new mysqli("localhost", "username", "password", "database");
+	$conn = new mysqli("localhost", "SlimeGuy" , "WeLoveSlime", "SlimeManager");
 
 	if($conn->connect_error)
 	{
