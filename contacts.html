@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>SlimeManager — Contacts</title>
+	<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="app-page">
+	<header class="app-header">
+		<h1 class="brand"><a href="index.html"><span>SlimeManager</span></a></h1>
+		<div class="user-box">
+			<span id="userName" class="user-name"></span>
+			<button type="button" class="btn btn-ghost" onclick="doLogout();">Log Out</button>
+		</div>
+	</header>
+
+	<main class="app-main">
+		<section class="card">
+			<h2>Search Contacts</h2>
+			<p class="section-copy">Find your saved friends and family by name.</p>
+
+			<div class="search-bar">
+				<input type="text" id="searchText" placeholder="Search contacts..." oninput="onSearchInput();" />
+				<button type="button" class="btn btn-primary" onclick="searchContacts();">Search</button>
+			</div>
+
+			<p id="contactSearchResult" class="form-msg"></p>
+			<ul id="contactList" class="contact-list"></ul>
+		</section>
+
+		<section class="card">
+			<h2>Add Contact</h2>
+			<p class="section-copy">Store a new contact under your account only.</p>
+
+			<form id="addContactForm" onsubmit="addContact(event);">
+				<div class="field-row">
+					<div class="field">
+						<label for="addFirstName">First Name</label>
+						<input type="text" id="addFirstName" placeholder="Jane" required />
+					</div>
+
+					<div class="field">
+						<label for="addLastName">Last Name</label>
+						<input type="text" id="addLastName" placeholder="Doe" required />
+					</div>
+				</div>
+
+				<div class="field-row">
+					<div class="field">
+						<label for="addPhone">Phone</label>
+						<input type="tel" id="addPhone" placeholder="407-555-1234" />
+					</div>
+
+					<div class="field">
+						<label for="addEmail">Email</label>
+						<input type="email" id="addEmail" placeholder="jane@example.com" />
+					</div>
+				</div>
+
+				<div class="field">
+					<label for="addSocialMedia">Social Media</label>
+					<input type="text" id="addSocialMedia" placeholder="Instagram: @janedoe" />
+				</div>
+
+				<button type="submit" class="btn btn-primary btn-block">Add Contact</button>
+				<p id="contactAddResult" class="form-msg"></p>
+			</form>
+		</section>
+	</main>
+
+	<!-- Edit modal -->
+	<div id="editOverlay" class="overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="editHeading" hidden>
+		<div class="modal card">
+			<h2 id="editHeading">Edit contact</h2>
+			<form id="editForm" onsubmit="saveEdit(event);">
+				<input type="hidden" id="editId" />
+				<div class="field-row">
+					<div class="field">
+						<label for="editFirstName">First Name</label>
+						<input type="text" id="editFirstName" required />
+					</div>
+					<div class="field">
+						<label for="editLastName">Last Name</label>
+						<input type="text" id="editLastName" required />
+					</div>
+				</div>
+				<div class="field-row">
+					<div class="field">
+						<label for="editPhone">Phone</label>
+						<input type="tel" id="editPhone" />
+					</div>
+					<div class="field">
+						<label for="editEmail">Email</label>
+						<input type="email" id="editEmail" />
+					</div>
+				</div>
+				<div class="field">
+					<label for="editSocialMedia">Social Media</label>
+					<input type="text" id="editSocialMedia" />
+				</div>
+				<p id="editResult" class="form-msg"></p>
+				<div class="modal-actions">
+					<button type="button" class="btn btn-ghost" onclick="closeEdit();">Cancel</button>
+					<button type="submit" class="btn btn-primary">Save Changes</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Delete confirm modal -->
+	<div id="deleteOverlay" class="overlay is-hidden" role="alertdialog" aria-modal="true" aria-labelledby="deleteHeading" aria-describedby="deleteText" hidden>
+		<div class="modal card modal-sm">
+			<h2 id="deleteHeading">Delete contact?</h2>
+			<p id="deleteText">This action cannot be undone.</p>
+			<div class="modal-actions">
+				<button type="button" class="btn btn-ghost" onclick="closeDelete();">Cancel</button>
+				<button type="button" class="btn btn-danger" onclick="confirmDelete();">Delete</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="js/app.js"></script>
+	<script src="js/contacts.js"></script>
+</body>
+</html>

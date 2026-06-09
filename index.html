@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>SlimeManager &mdash; Sign In</title>
+	<meta name="description" content="Slime: sign in or create an account to manage your personal contacts." />
+	<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="auth-page">
+	<main class="auth-shell">
+		<section class="card auth-card" aria-labelledby="appTitle">
+			<h1 id="appTitle" class="brand"><span>SlimeManager</span></h1>
+
+			<div class="tabs" id="authTabs" role="tablist" aria-label="Authentication">
+				<span class="tab-indicator" aria-hidden="true"></span>
+				<button type="button" id="loginTab" class="tab is-active" role="tab"
+					aria-selected="true" aria-controls="loginPanel" onclick="showAuthTab('login');">
+					Log In
+				</button>
+				<button type="button" id="registerTab" class="tab" role="tab"
+					aria-selected="false" aria-controls="registerPanel" onclick="showAuthTab('register');">
+					Sign Up
+				</button>
+			</div>
+
+			<div class="auth-viewport">
+			<!-- Login -->
+			<form id="loginPanel" class="auth-form" role="tabpanel" aria-labelledby="loginTab"
+				onsubmit="doLogin(event);" novalidate>
+				<div class="field">
+					<label for="loginName">Username</label>
+					<input type="text" id="loginName" name="username" autocomplete="username" required />
+				</div>
+				<div class="field">
+					<label for="loginPassword">Password</label>
+					<input type="password" id="loginPassword" name="password" autocomplete="current-password" required />
+				</div>
+				<button type="submit" class="btn btn-primary btn-block">Log In</button>
+				<p id="loginResult" class="form-msg" role="status" aria-live="polite"></p>
+			</form>
+
+			<!-- Register -->
+			<form id="registerPanel" class="auth-form is-hidden" role="tabpanel" aria-labelledby="registerTab"
+				onsubmit="doRegister(event);" novalidate hidden>
+				<div class="field-row">
+					<div class="field">
+						<label for="regFirst">First name</label>
+						<input type="text" id="regFirst" name="firstName" autocomplete="given-name" required />
+					</div>
+					<div class="field">
+						<label for="regLast">Last name</label>
+						<input type="text" id="regLast" name="lastName" autocomplete="family-name" required />
+					</div>
+				</div>
+				<div class="field">
+					<label for="regLogin">Username</label>
+					<input type="text" id="regLogin" name="username" autocomplete="username" required />
+				</div>
+				<div class="field">
+					<label for="regPassword">Password</label>
+					<input type="password" id="regPassword" name="new-password" autocomplete="new-password" required minlength="4" />
+				</div>
+				<button type="submit" class="btn btn-primary btn-block">Create Account</button>
+				<p id="registerResult" class="form-msg" role="status" aria-live="polite"></p>
+			</form>
+			</div>
+		</section>
+	</main>
+
+	<script src="js/app.js"></script>
+	<script src="js/auth.js"></script>
+</body>
+</html>
