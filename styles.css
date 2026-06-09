@@ -1,0 +1,686 @@
+/* ===========================================================================
+   Slime — personal contact manager
+   Theme: neon slime-green + glossy "wet" surfaces over a deep green-teal goo
+   =========================================================================== */
+
+:root {
+	--slime: #9bff3d;
+	--slime-soft: #c8ff85;
+	--slime-deep: #4fbf12;
+	--on-slime: #0a2400;          /* dark text on slime buttons */
+	--ink: #08160e;               /* deep input/well background */
+	--surface: rgba(20, 44, 30, 0.92);
+	--surface-2: rgba(14, 32, 22, 0.92);
+	--border: #234634;
+	--border-slime: rgba(155, 255, 61, 0.40);
+	--text: #eafff1;
+	--text-muted: #a4c6b3;
+	--danger: #ff6b6b;
+	--danger-deep: #e23b3b;
+	--ok: #6bff9e;
+	--radius: 18px;
+	--radius-sm: 11px;
+	--shadow: 0 20px 55px rgba(0, 20, 8, 0.55);
+	--glow: 0 0 0 4px rgba(155, 255, 61, 0.25);
+	--font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	--ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { box-sizing: border-box; }
+
+/* Gradient lives on <html> so the negative-z scene (grass + blob) can sit
+   between it and the page content without being hidden behind body's bg. */
+html {
+	min-height: 100%;
+	background:
+		radial-gradient(1100px 760px at 18% -5%, #1c5a35 0%, transparent 58%),
+		radial-gradient(1000px 720px at 95% 105%, #0d4a52 0%, transparent 60%),
+		linear-gradient(165deg, #0c2a1a 0%, #081a20 60%, #061218 100%);
+	background-attachment: fixed;
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+	min-height: 100vh;
+	font-family: var(--font);
+	color: var(--text);
+	line-height: 1.55;
+	-webkit-font-smoothing: antialiased;
+}
+body { background: transparent; }
+
+h1, h2 { margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+
+.sr-only {
+	position: absolute;
+	width: 1px; height: 1px;
+	padding: 0; margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.is-hidden { display: none !important; }
+
+/* ---------------------------------------------------------------------------
+   Ambient slime blobs (drifting green goo over the gradient)
+   --------------------------------------------------------------------------- */
+body::before,
+body::after {
+	content: "";
+	position: fixed;
+	z-index: -1;
+	width: 62vmax;
+	height: 62vmax;
+	border-radius: 47% 53% 60% 40% / 45% 50% 50% 55%;
+	filter: blur(70px);
+	opacity: 0.55;
+	pointer-events: none;
+}
+body::before {
+	top: -16vmax;
+	left: -10vmax;
+	background: radial-gradient(circle, rgba(155, 255, 61, 0.55), transparent 65%);
+	animation: drift-a 20s var(--ease) infinite alternate;
+}
+body::after {
+	bottom: -22vmax;
+	right: -12vmax;
+	background: radial-gradient(circle, rgba(54, 226, 168, 0.45), transparent 65%);
+	animation: drift-b 26s var(--ease) infinite alternate;
+}
+
+@keyframes drift-a {
+	from { transform: translate(0, 0) scale(1) rotate(0deg); }
+	to   { transform: translate(13vmax, 9vmax) scale(1.2) rotate(25deg); }
+}
+@keyframes drift-b {
+	from { transform: translate(0, 0) scale(1.1) rotate(0deg); }
+	to   { transform: translate(-11vmax, -7vmax) scale(1) rotate(-20deg); }
+}
+
+/* ---------------------------------------------------------------------------
+   Brand
+   --------------------------------------------------------------------------- */
+.brand {
+	position: relative;
+	font-size: 1.7rem;
+	font-weight: 800;
+	color: var(--text);
+}
+/* When the wordmark links home, keep it looking like the wordmark, not a link. */
+.brand a {
+	color: inherit;
+	text-decoration: none;
+}
+.brand span {
+	position: relative;
+	display: inline-block;
+	/* Pure, vivid neon green — solid fill, no gradient/blend that could mute it,
+	   and a bright lime glow (no dark halo) so the whole wordmark reads bright. */
+	color: #5cff00;
+	-webkit-text-fill-color: #5cff00;
+	text-shadow:
+		0 0 6px rgba(120, 255, 40, 0.9),
+		0 0 14px rgba(92, 255, 0, 0.75),
+		0 0 26px rgba(92, 255, 0, 0.5);
+}
+
+/* Slime drops oozing down from the wordmark */
+.brand-drops {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0.24em;
+	height: 0;
+	pointer-events: none;
+}
+.brand-drop {
+	position: absolute;
+	top: 0;
+	width: 0.5em;
+	height: 1.05em;
+	transform-origin: top center;
+	opacity: 0;
+	animation: brand-drip var(--dur, 4s) cubic-bezier(0.6, 0, 0.75, 1) infinite;
+	animation-delay: var(--delay, 0s);
+}
+/* The bulb itself: thin neck at the top swelling to a round bottom. */
+.brand-drop::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 40% 74%, var(--slime-soft), var(--slime) 52%, var(--slime-deep));
+	clip-path: polygon(44% 0, 56% 0, 60% 18%, 72% 36%, 90% 52%, 96% 70%, 88% 88%, 66% 99%, 50% 100%, 34% 99%, 12% 88%, 4% 70%, 10% 52%, 28% 36%, 40% 18%);
+	filter: drop-shadow(0 2px 4px rgba(79, 191, 18, 0.5));
+}
+/* The slime trail streaking up from the bulb while it falls. */
+.brand-drop::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 55%;
+	width: 0.16em;
+	height: 1.5em;
+	transform: translateX(-50%) scaleY(0.2);
+	transform-origin: bottom center;
+	background: linear-gradient(to top, rgba(123, 230, 38, 0.85), rgba(123, 230, 38, 0));
+	border-radius: 50%;
+	opacity: 0;
+	animation: brand-trail var(--dur, 4s) cubic-bezier(0.6, 0, 0.75, 1) infinite;
+	animation-delay: var(--delay, 0s);
+}
+@keyframes brand-trail {
+	0%, 52%  { opacity: 0; transform: translateX(-50%) scaleY(0.15); }
+	62%      { opacity: 0.7; }
+	100%     { opacity: 0; transform: translateX(-50%) scaleY(1.5); }
+}
+@keyframes brand-drip {
+	/* A bead forms at the letter, swells while hanging, then breaks off and falls. */
+	0%       { transform: translateY(0) scale(0.25, 0.1); opacity: 0; }
+	10%      { opacity: 1; }
+	35%      { transform: translateY(0) scale(1, 1); opacity: 1; }
+	55%      { transform: translateY(0.14em) scale(1.05, 1.18); opacity: 1; }
+	72%      { transform: translateY(0.95em) scale(0.95, 0.95); opacity: 1; }
+	100%     { transform: translateY(2.7em) scale(0.78, 0.82); opacity: 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------------- */
+.btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	font: inherit;
+	font-weight: 700;
+	padding: 0.7rem 1.3rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	background: var(--surface-2);
+	color: var(--text);
+	overflow: hidden;
+	transition: transform 0.18s var(--ease), box-shadow 0.25s var(--ease),
+		background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+.btn:focus-visible { outline: 3px solid var(--slime); outline-offset: 2px; }
+
+.btn-primary {
+	background: linear-gradient(135deg, var(--slime-soft), var(--slime) 45%, var(--slime-deep));
+	color: var(--on-slime);
+	border-color: transparent;
+	box-shadow: 0 8px 22px rgba(155, 255, 61, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.btn-primary:hover { box-shadow: 0 12px 32px rgba(155, 255, 61, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.7); }
+/* Glossy shimmer sweep on hover */
+.btn-primary::after {
+	content: "";
+	position: absolute;
+	top: 0; left: -130%;
+	width: 60%; height: 100%;
+	background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+	transform: skewX(-20deg);
+	transition: left 0.6s var(--ease);
+}
+.btn-primary:hover::after { left: 140%; }
+
+.btn-ghost { background: transparent; border-color: var(--border-slime); color: var(--slime); }
+.btn-ghost:hover { background: rgba(155, 255, 61, 0.12); box-shadow: var(--glow); }
+
+.btn-danger { background: var(--danger); color: #2a0000; border-color: transparent; }
+.btn-danger:hover { background: var(--danger-deep); box-shadow: 0 10px 26px rgba(255, 107, 107, 0.4); }
+
+.btn-danger-outline { background: transparent; border-color: rgba(255, 107, 107, 0.5); color: var(--danger); }
+.btn-danger-outline:hover { background: var(--danger); color: #2a0000; }
+
+.btn-block { width: 100%; }
+.btn-small { padding: 0.45rem 0.9rem; font-size: 0.9rem; }
+
+/* ---------------------------------------------------------------------------
+   Forms
+   --------------------------------------------------------------------------- */
+.field { margin-bottom: 1rem; }
+.field-row { display: flex; gap: 1rem; }
+.field-row .field { flex: 1; }
+
+label {
+	display: block;
+	font-size: 0.82rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin-bottom: 0.35rem;
+}
+
+input {
+	width: 100%;
+	font: inherit;
+	padding: 0.7rem 0.85rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--ink);
+	color: var(--text);
+	transition: border-color 0.2s ease, box-shadow 0.25s var(--ease), background-color 0.2s ease;
+}
+input::placeholder { color: #6f8a7b; }
+input:hover { border-color: var(--border-slime); }
+input:focus-visible {
+	outline: none;
+	border-color: var(--slime);
+	box-shadow: var(--glow);
+	background: #0b1d13;
+}
+
+.form-msg {
+	min-height: 1.25rem;
+	margin: 0.7rem 0 0;
+	font-size: 0.9rem;
+	color: var(--text-muted);
+	transition: color 0.2s ease;
+}
+.form-msg.is-error { color: var(--danger); font-weight: 600; }
+.form-msg.is-ok { color: var(--ok); font-weight: 600; }
+
+/* ---------------------------------------------------------------------------
+   Card (glossy slime glass)
+   --------------------------------------------------------------------------- */
+.card {
+	position: relative;
+	background: linear-gradient(180deg, var(--surface), var(--surface-2));
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 1.75rem;
+	box-shadow: var(--shadow), inset 0 1px 0 rgba(155, 255, 61, 0.08);
+}
+/* Slime drip accent across the top of cards */
+.card::before {
+	content: "";
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 3px;
+	border-radius: var(--radius) var(--radius) 0 0;
+	background: linear-gradient(90deg, transparent, var(--slime), transparent);
+	box-shadow: 0 0 14px rgba(155, 255, 61, 0.55);
+}
+
+.card h2 { color: var(--slime); font-size: 1.25rem; }
+
+/* ---------------------------------------------------------------------------
+   Auth page
+   --------------------------------------------------------------------------- */
+.auth-shell {
+	min-height: 100vh;
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+}
+.auth-card {
+	width: 100%;
+	max-width: 430px;
+	animation: rise 0.7s var(--ease) both;
+}
+.auth-card .brand { text-align: center; font-size: 2.2rem; margin-bottom: 1.4rem; }
+
+.tabs {
+	position: relative;
+	display: flex;
+	gap: 0;
+	margin-bottom: 1.4rem;
+	background: var(--ink);
+	padding: 0.35rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+}
+/* The slime pill that slides between the two tabs */
+.tab-indicator {
+	position: absolute;
+	top: 0.35rem;
+	bottom: 0.35rem;
+	left: 0.35rem;
+	width: calc(50% - 0.35rem);
+	border-radius: 8px;
+	background: linear-gradient(135deg, var(--slime-soft), var(--slime-deep));
+	box-shadow: 0 6px 18px rgba(155, 255, 61, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+	transition: transform 0.45s var(--ease);
+	z-index: 0;
+}
+.tabs.show-register .tab-indicator { transform: translateX(100%); }
+.tab {
+	position: relative;
+	z-index: 1;
+	flex: 1;
+	font: inherit;
+	font-weight: 700;
+	padding: 0.6rem;
+	border: none;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: color 0.3s ease;
+}
+.tab.is-active { color: var(--on-slime); }
+.tab:focus-visible { outline: 3px solid var(--slime); outline-offset: 2px; }
+
+.auth-viewport { overflow: hidden; }
+.auth-form { animation: fade 0.45s var(--ease) both; }
+.auth-form.from-right { animation: slide-from-right 0.6s var(--ease) both; }
+.auth-form.from-left  { animation: slide-from-left 0.6s var(--ease) both; }
+
+/* ---------------------------------------------------------------------------
+   App page
+   --------------------------------------------------------------------------- */
+.app-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1.1rem 1.75rem;
+	background: rgba(8, 22, 14, 0.65);
+	backdrop-filter: blur(10px);
+	border-bottom: 1px solid var(--border-slime);
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	animation: fade 0.5s var(--ease) both;
+}
+.user-box { display: flex; align-items: center; gap: 1rem; }
+.user-name { font-weight: 600; color: var(--slime); }
+
+.app-main {
+	max-width: 780px;
+	margin: 0 auto;
+	padding: 1.75rem 1.5rem 3rem;
+	display: grid;
+	gap: 1.75rem;
+}
+.app-main .card { animation: rise 0.6s var(--ease) both; }
+.app-main .card:nth-child(2) { animation-delay: 0.08s; }
+
+.search-bar { display: flex; gap: 0.6rem; }
+.search-bar input { flex: 1; }
+
+/* ---------------------------------------------------------------------------
+   Contact list
+   --------------------------------------------------------------------------- */
+.contact-list { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.8rem; }
+.contact-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem 1.1rem;
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--slime);
+	border-radius: var(--radius-sm);
+	background: var(--ink);
+	transition: transform 0.2s var(--ease), box-shadow 0.25s var(--ease), border-color 0.2s ease;
+	animation: rise 0.45s var(--ease) both;
+}
+.contact-card:hover {
+	transform: translateX(4px);
+	box-shadow: -6px 0 20px rgba(155, 255, 61, 0.18);
+	border-color: var(--border-slime);
+}
+.contact-card:nth-child(1) { animation-delay: 0.02s; }
+.contact-card:nth-child(2) { animation-delay: 0.06s; }
+.contact-card:nth-child(3) { animation-delay: 0.10s; }
+.contact-card:nth-child(4) { animation-delay: 0.14s; }
+.contact-card:nth-child(5) { animation-delay: 0.18s; }
+.contact-card:nth-child(6) { animation-delay: 0.22s; }
+.contact-card:nth-child(7) { animation-delay: 0.26s; }
+.contact-card:nth-child(8) { animation-delay: 0.30s; }
+
+.contact-info { min-width: 0; }
+.contact-name { margin: 0; font-weight: 700; color: var(--text); }
+.contact-detail { margin: 0.15rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
+.contact-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.empty-state { color: var(--text-muted); text-align: center; padding: 1.25rem 0; }
+
+/* ---------------------------------------------------------------------------
+   Modal
+   --------------------------------------------------------------------------- */
+.overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(4, 14, 8, 0.72);
+	backdrop-filter: blur(4px);
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+	z-index: 50;
+	animation: fade 0.25s ease both;
+}
+.modal { width: 100%; max-width: 480px; animation: pop 0.32s var(--ease) both; }
+.modal-sm { max-width: 390px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.1rem; }
+
+/* ---------------------------------------------------------------------------
+   Keyframes
+   --------------------------------------------------------------------------- */
+/* Entry animations are transform-only (no opacity fade). Hiding content with
+   opacity:0 prevented Chrome from ever logging a First Contentful Paint, which
+   made Lighthouse fail the run (NO_FCP → score 0). Keeping the motion but never
+   hiding the content lets FCP fire immediately. */
+@keyframes rise {
+	from { transform: translateY(18px); }
+	to   { transform: translateY(0); }
+}
+@keyframes fade {
+	from { transform: translateY(6px); }
+	to   { transform: translateY(0); }
+}
+@keyframes pop {
+	from { transform: scale(0.92) translateY(8px); }
+	to   { transform: scale(1) translateY(0); }
+}
+@keyframes slide-from-right {
+	from { transform: translateX(70px); }
+	to   { transform: translateX(0); }
+}
+@keyframes slide-from-left {
+	from { transform: translateX(-70px); }
+	to   { transform: translateX(0); }
+}
+
+/* ---------------------------------------------------------------------------
+   Decorative slime scene (grass + roaming blob + drips) — behind everything
+   --------------------------------------------------------------------------- */
+.scene {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+/* Grass field */
+.grass {
+	position: absolute;
+	left: 0; right: 0; bottom: 0;
+	height: 140px;
+}
+.blade {
+	position: absolute;
+	bottom: 0;
+	border-radius: 50% 50% 0 0 / 88% 88% 0 0;
+	transform-origin: bottom center;
+	transform: rotate(var(--tilt));
+	animation: sway var(--sway) ease-in-out infinite alternate;
+}
+@keyframes sway {
+	from { transform: rotate(calc(var(--tilt) - 7deg)); }
+	to   { transform: rotate(calc(var(--tilt) + 7deg)); }
+}
+
+/* Roaming slime blob */
+.slime-blob {
+	position: absolute;
+	bottom: 48px;
+	left: 0;
+	width: 92px;
+	height: 72px;
+	background: radial-gradient(circle at 35% 28%, #d6ff9e, #7fe22a 52%, #3f9e07 100%);
+	border-radius: 46% 54% 47% 53% / 60% 62% 40% 42%;
+	box-shadow: 0 12px 22px rgba(0, 40, 0, 0.4),
+		inset -8px -10px 18px rgba(0, 70, 0, 0.35),
+		inset 8px 8px 14px rgba(255, 255, 255, 0.55);
+	animation: roam 26s ease-in-out infinite;
+}
+.slime-blob .eye {
+	position: absolute;
+	top: 30%;
+	width: 13px;
+	height: 16px;
+	background: #fff;
+	border-radius: 50%;
+}
+.slime-blob .eye-l { left: 30%; }
+.slime-blob .eye-r { left: 53%; }
+.slime-blob .eye::after {
+	content: "";
+	position: absolute;
+	bottom: 3px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 6px;
+	height: 6px;
+	background: #0a2400;
+	border-radius: 50%;
+}
+.slime-blob .shine {
+	position: absolute;
+	top: 14%;
+	left: 20%;
+	width: 24px;
+	height: 14px;
+	background: rgba(255, 255, 255, 0.6);
+	border-radius: 50%;
+	filter: blur(2px);
+	transform: rotate(-18deg);
+}
+@keyframes roam {
+	0%   { transform: translate(2vw, 0); }
+	25%  { transform: translate(28vw, -14px); }
+	50%  { transform: translate(78vw, 0); }
+	75%  { transform: translate(40vw, -10px); }
+	100% { transform: translate(2vw, 0); }
+}
+@keyframes wobble {
+	0%, 100% { transform: translate(0, 0) scale(1, 1); }
+	50%      { transform: translate(0, -2px) scale(1.03, 0.97); }
+}
+
+/* Oozing drips from the top of the screen */
+.top-drips { position: absolute; top: 0; left: 0; right: 0; height: 0; }
+.ooze {
+	position: absolute;
+	top: 0;
+	width: 14px;
+	background: linear-gradient(to bottom, rgba(155, 255, 61, 0.9), rgba(79, 191, 18, 0.55));
+	border-radius: 0 0 50% 50% / 0 0 92% 92%;
+	transform-origin: top center;
+	animation: ooze-grow var(--dur) ease-in-out infinite alternate;
+}
+.ooze::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: -5px;
+	transform: translateX(-50%);
+	width: 9px;
+	height: 9px;
+	background: rgba(79, 191, 18, 0.7);
+	border-radius: 50%;
+}
+@keyframes ooze-grow {
+	from { transform: scaleY(0.7); }
+	to   { transform: scaleY(1.12); }
+}
+
+/* A few oozing drips hanging off the bottom edge of a block button */
+.btn-ooze {
+	position: relative;
+	width: 100%;
+	height: 0;
+	margin-top: -1px;
+	pointer-events: none;
+}
+
+/* Realistic glossy slime coat dripping off the bottom edge of a block button.
+   Fat rounded tongues of varying length; some carry a detached bead below. */
+.slime-drip {
+	position: relative;
+	width: 100%;
+	height: 0;
+	margin-top: -2px;
+	z-index: 1;
+	pointer-events: none;
+}
+.sd {
+	position: absolute;
+	top: 0;
+	transform-origin: top center;
+	background: linear-gradient(to bottom,
+		var(--slime-soft) 0%, var(--slime) 38%, var(--slime-deep) 100%);
+	/* fat tongue: straight shoulders, round swollen tip */
+	border-radius: 45% 45% 50% 50% / 12% 12% 90% 90%;
+	box-shadow:
+		inset 0 3px 4px rgba(255, 255, 255, 0.55),
+		inset 0 -6px 8px rgba(40, 110, 0, 0.35),
+		0 5px 9px rgba(79, 191, 18, 0.35);
+}
+/* gloss highlight running down the tongue */
+.sd::before {
+	content: "";
+	position: absolute;
+	top: 12%;
+	left: 26%;
+	width: 26%;
+	height: 60%;
+	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+	border-radius: 50%;
+	filter: blur(0.4px);
+}
+/* a detached bead of slime hanging just below the tongue tip */
+.sd.has-bead::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: -14px;
+	transform: translateX(-50%);
+	width: 11px;
+	height: 13px;
+	background: radial-gradient(circle at 38% 30%, var(--slime-soft), var(--slime) 55%, var(--slime-deep));
+	border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+	box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive
+   --------------------------------------------------------------------------- */
+@media (max-width: 560px) {
+	.field-row { flex-direction: column; gap: 0; }
+	.app-header { flex-direction: column; align-items: flex-start; }
+	.contact-card { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------------------------------------------------------------------------
+   Accessibility — tame only the looping ambient motion
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation: none !important;
+		transition: none !important;
+	}
+}
