@@ -6,7 +6,7 @@
 	$login = $inData["login"];
 	$password = $inData["password"];
 
-	$conn = new mysqli("localhost", "SlimeGuy" , "WeLoveSlime", "SlimeManager");
+	$conn = new mysqli("localhost", "SlimeGuy", "WeLoveSlime", "SlimeManager");
 
 	if($conn->connect_error)
 	{
@@ -22,23 +22,28 @@
 		if($row = $result->fetch_assoc())
 		{
 			returnWithError("Username already exists");
+			$stmt->close();
+			$conn->close();
+			exit();
+		}
+
+		$stmt->close();
+
+		$hash = password_hash($password, PASSWORD_DEFAULT);
+
+		$insertStmt = $conn->prepare("INSERT INTO Users (firstName, lastName, Login, Password) VALUES(?,?,?,?)");
+		$insertStmt->bind_param("ssss", $firstName, $lastName, $login, $hash);
+
+		if($insertStmt->execute())
+		{
+			returnWithError("");
 		}
 		else
 		{
-			$insertStmt = $conn->prepare("INSERT INTO Users (firstName, lastName, Login, Password) VALUES(?,?,?,?)");
-			$insertStmt->bind_param("ssss", $firstName, $lastName, $login, $password);
-
-			if($insertStmt->execute())
-			{
-				returnWithError("");
-			}
-			else
-			{
-				returnWithError($insertStmt->error);
-			}
-			$insertStmt->close();
+			returnWithError($insertStmt->error);
 		}
-		$stmt->close();
+			
+		$insertStmt->close();
 		$conn->close();
 	}
 	function getRequestInfo()
@@ -54,8 +59,8 @@
 
 	function returnWithError($err)
 	{
-		$retValue = '{"error":"' . $err . '"}';
-        	sendResultInfoAsJson($retValue);
+		$retValue = array("error" => $err);
+        	sendResultInfoAsJson(json_encode($retValue));
 	}
 
 ?>

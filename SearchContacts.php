@@ -1,73 +1,73 @@
 <?php
 
-    $inData = requestInfo();
+    // Returns every contact that belongs to the given user and matches the
+    // search text (name, phone, or email). An empty search returns all of the
+    // user's contacts.
+    $inData = getRequestInfo();
 
     $searchResults = array();
-    $searchCount = 0;
-    
-    $conn = new mysqli("localhost", "SlimeGuy" , "WeLoveSlime", "SlimeManager"); 
-    if ($conn->conn_error)
+
+    $conn = new mysqli("localhost", "SlimeGuy", "WeLoveSlime", "SlimeManager");
+    if ($conn->connect_error)
     {
-        returnError( $conn->conn_error );
+        returnError($conn->connect_error);
     }
     else
     {
-    
-        $stmt = $conn->prepare("SELECT UserId, firstName, lastName, Phone, Email FROM Contacts WHERE (firstName LIKE ? OR lastName LIKE ?) AND UserID = ?");
+        $stmt = $conn->prepare(
+            "SELECT ID, firstName, lastName, Phone, Email, MediaApp, MediaUsername, MediaIsLink, MediaLink
+             FROM Contacts
+             WHERE (firstName LIKE ? OR lastName LIKE ? OR Phone LIKE ? OR Email LIKE ?)
+               AND UserID = ?"
+        );
 
         $searchToken = "%" . $inData["search"] . "%";
+        $userId = $inData["userId"];
 
-        $stmt->bind_param("ssi", $searchToken, $searchToken, $inData["userId"]);
+        $stmt->bind_param("ssssi", $searchToken, $searchToken, $searchToken, $searchToken, $userId);
         $stmt->execute();
-
         $result = $stmt->get_result();
 
-        while($row = $result->fetch_assoc())
+        while ($row = $result->fetch_assoc())
         {
             $searchResults[] = array(
-                "id" => $row["UserId"],
-                "firstName" => $row["firstName"],
-                "lastName" => $row["lastName"],
-                "phone" => $row["Phone"],
-                "email" => $row["Email"],
+                "id"            => intval($row["ID"]),   // the contact's real row ID (needed for edit/delete)
+                "firstName"     => $row["firstName"],
+                "lastName"      => $row["lastName"],
+                "phone"         => $row["Phone"],
+                "email"         => $row["Email"],
+                "mediaApp"      => $row["MediaApp"],
+                "mediaUsername" => $row["MediaUsername"],
+                "mediaIsLink"   => $row["MediaIsLink"],
+                "mediaLink"     => $row["MediaLink"]
             );
-            $searchCount++;
         }
 
-        if( $searchCount == 0)
-        {
-            returnError( "No records found.");
-        }
-        else
-        {
-            returnWithInfo( $searchResults );
-        }
+        returnWithInfo($searchResults);
 
         $stmt->close();
         $conn->close();
     }
 
-    function requestInfo()
+    function getRequestInfo()
     {
         return json_decode(file_get_contents('php://input'), true);
     }
 
-    function jsonInfo( $obj )
+    function sendResultInfoAsJson($obj)
     {
-        header('Content-type: application/json');
+        header('Content-Type: application/json');
         echo $obj;
     }
 
-    function returnError( $err )
+    function returnError($err)
     {
-        $retValue = '{"results":[],"error":"' . $err . '"}';
-        jsonInfo( $retValue );
+        sendResultInfoAsJson(json_encode(array("results" => array(), "error" => $err)));
     }
 
-    function returnWithInfo( $searchResults )
+    function returnWithInfo($searchResults)
     {
-        $retValue = json_encode(array("results" => $searchResults, "error" => ""));
-        jsonInfo( $retValue );
+        sendResultInfoAsJson(json_encode(array("results" => $searchResults, "error" => "")));
     }
 
 ?>

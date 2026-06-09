@@ -1,52 +1,61 @@
 <?php
 
+    // Adds a new contact for the given user.
     $inData = getRequestInfo();
 
-    $userID = $inData["userID"];
-    $firstName = $inData["firstName"];
-    $lastName = $inData["lastName"];
-    $phone = $inData["phone"];
-    $email = $inData["email"];
+    $userId        = $inData["userId"];
+    $firstName     = $inData["firstName"];
+    $lastName      = $inData["lastName"];
+    $phone         = $inData["phone"];
+    $email         = $inData["email"];
+    $mediaApp      = $inData["mediaApp"];
+    $mediaUsername = $inData["mediaUsername"];
+    $mediaIsLink   = $inData["mediaIsLink"];
+    $mediaLink     = $inData["mediaLink"];
 
-    $conn = new mysqli("localhost", "SlimeGuy" , "WeLoveSlime", "SlimeManager");
-    if($conn->conn_error)
+    $conn = new mysqli("localhost", "SlimeGuy", "WeLoveSlime", "SlimeManager");
+    if ($conn->connect_error)
+    {
+        returnError($conn->connect_error);
+    }
+    else
+    {
+        $stmt = $conn->prepare(
+            "INSERT INTO Contacts (UserID, firstName, lastName, Phone, Email, MediaApp, MediaUsername, MediaIsLink, MediaLink)
+             VALUES (?,?,?,?,?,?,?,?,?)"
+        );
+        $stmt->bind_param("issssssis",
+            $userId, $firstName, $lastName, $phone, $email,
+            $mediaApp, $mediaUsername, $mediaIsLink, $mediaLink
+        );
+
+        if ($stmt->execute())
         {
-            returnError( $conn->conn_error );
+            returnError("");
         }
         else
         {
+            returnError($stmt->error);
+        }
 
-            $stmt = $conn->prepare("INSERT into Contacts (UserId, firstName, lastName, Phone, Email) VALUES(?,?,?,?,?)");
+        $stmt->close();
+        $conn->close();
+    }
 
-            $stmt->bind_param("sssss", $userID, $firstName, $lastName, $phone, $email);
+    function getRequestInfo()
+    {
+        return json_decode(file_get_contents('php://input'), true);
+    }
 
-            if ($stmt->execute()) 
-            {
-                returnError(" ");
-            }
-            else
-            {
-                returnError($stmt->error);
-            }
+    function sendResultInfoAsJson($obj)
+    {
+        header('Content-Type: application/json');
+        echo $obj;
+    }
 
-            $stmt->close();
-            $conn->close();
-            }   
+    function returnError($err)
+    {
+        sendResultInfoAsJson(json_encode(array("error" => $err)));
+    }
 
-            function getRequestInfo()
-            {
-                return json_decode(file_get_contents('php://input'), true);
-            }
-
-            function jsonInfo( $obj )
-            {
-               header('Content-type: application/json');
-               echo $obj;
-            }
-
-            function returnError( $err )
-            {
-                $retValue = '{"error": "' . $err . '"}';
-                jsonInfo( $retValue );
-            }
 ?>
